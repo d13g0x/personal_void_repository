@@ -1,0 +1,36 @@
+# Template file for 'tabbed-dfcs' personal build
+pkgname=tabbed-dfcs
+version=0.6
+revision=1
+wrksrc="tabbed_pkgs-${version}"
+build_style=gnu-makefile
+make_build_args="INCS=-I. LIBS=-lX11"
+hostmakedepends="pkgconf"
+makedepends="freetype-devel libX11-devel libXft-devel"
+conflicts="tabbed>=0"
+short_desc="Tab interface for application supporting Xembed"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="MIT"
+homepage="http://tools.suckless.org/tabbed/"
+distfiles="https://github.com/d13g0x/tabbed_pkgs/archive/refs/tags/0.6.tar.gz"
+checksum=5fe155de0833a7529d9d39d72b0a9684ef640aebf582a160c6e43f4eeb38327e
+
+pre_build() {
+    sed -i 's|-O0 ||g' config.mk
+    sed -i 's|^CPPFLAGS =|override CPPFLAGS +=|g' config.mk
+    sed -i 's|^CFLAGS =|override CFLAGS +=|g' config.mk
+    sed -i 's|^LDFLAGS =|override LDFLAGS +=|g' config.mk
+    # Remove BSD_SOURCE warning
+    sed -i 's/-D_BSD_SOURCE/-D_DEFAULT_SOURCE/g' config.mk
+   }
+
+do_build() {
+    # Si existe una configuración custom del usuario se usará
+    [ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+     make CC=$CC INCS="-I. -I${XBPS_CROSS_BASE}/usr/include/freetype2" LIBS="-lX11 -lXft -lfontconfig"
+   }
+
+post_install() {
+    vlicense LICENSE
+   }
+

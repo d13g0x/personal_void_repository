@@ -1,0 +1,26 @@
+#Template file for 'slstatus-dfcs' personal build
+pkgname=slstatus-dfcs
+version=0.1.1
+revision=1
+wrksrc="slstatus_pkgs-${version}"
+build_style=gnu-makefile
+short_desc="Suckless status monitor for dwm"
+license="ISC"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="ISC"
+homepage="https://tools.suckless.org/slstatus/"
+distfiles="https://github.com/d13g0x/slstatus_pkgs/archive/refs/tags/0.1.1.tar.gz"
+makedepends="alsa-lib-devel libX11-devel"
+checksum=6fb33957dfbd10847fb7f8a01ff37da1c0a447c8fa3dfbb5e5c9ef8f0158dfbc
+
+
+pre_build() {
+    sed -i -e 's|^CFLAGS *=|override CFLAGS +=|g' \
+        -e 's|^LDFLAGS *=|override LDFLAGS +=|g' config.mk
+            }
+
+            post_install() {
+                vlicense LICENSE
+                }
+
+                

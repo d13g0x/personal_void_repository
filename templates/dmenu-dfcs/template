@@ -1,0 +1,46 @@
+# Template file for 'dmenu-dfcs' personal build
+pkgname=dmenu-dfcs
+version=5.1
+revision=1
+wrksrc="dmenu_pkgs-${version}"
+build_style=gnu-makefile
+hostmakedepends="pkg-config"
+makedepends="libXinerama-devel libXft-devel freetype-devel"
+conflicts="dmenu>=0"
+short_desc="Generic menu for X"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="MIT"
+homepage="https://tools.suckless.org/dmenu/"
+
+distfiles="https://github.com/d13g0x/dmenu_pkgs/archive/refs/tags/5.1.tar.gz"
+#distfiles="${pkgname}-${version}.tar.gz::https://github.com/d13g0x/dmenu_pkgs/archive/refs/tags/5.1.1.tar.gz"
+checksum=840372e70215812b45a48e43c8b8e789a557da66c65b716a3f2af3a7bb4b3f7c
+
+#build_option="fuzzymatch"
+#desc_option_fuzzymatch="Enable Fuzzymatch support"
+
+#post_patch() {
+#	if [ "$build_option_fuzzymatch" ]; then
+#		msg_normal "Applying fuzzymatch patches"
+#		patch -slNp1 < "${FILESDIR}/fuzzymatch.patch"
+#	fi
+#	sed -i -e '/CFLAGS/{s/-Os//;s/=/+=/}' \
+#		-e '/LDFLAGS/{s/-s//;s/=/+=/}' config.mk
+#}
+
+do_build() {
+	[ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+	sed -i -e "s|^FREETYPEINC|#FREETYPEINC|g" \
+		-e "s|^X11INC|#X11INC|g" \
+		-e "s|^X11LIB|#X11LIB|g" config.mk
+
+	x11inc=$XBPS_CROSS_BASE/usr/include/X11
+	x11lib=$XBPS_CROSS_BASE/usr/lib
+	freetypeinc=$XBPS_CROSS_BASE/usr/include/freetype2
+	make CC="$CC" ${makejobs} X11INC=$x11inc X11LIB=$x11lib FREETYPEINC=$freetypeinc
+}
+
+do_install() {
+	make PREFIX=/usr DESTDIR=${DESTDIR} install
+	vlicense LICENSE
+}

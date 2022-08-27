@@ -1,0 +1,27 @@
+#Template file for 'dwm-dfcs' personal build
+pkgname=dwm-dfcs
+version=6.3
+revision=1
+wrksrc="dwm_pkgs-${version}"
+build_style=gnu-makefile
+hostmakedepends="pkgconf"
+makedepends="libXinerama-devel libXft-devel freetype-devel"
+conflicts="dwm>=0"
+short_desc="Dynamic window manager for X"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="MIT"
+homepage="http://dwm.suckless.org"
+distfiles="https://github.com/d13g0x/dwm_pkgs/archive/refs/tags/6.3.tar.gz"
+checksum=9468f2e1a79b1715d371ad388cd63169ed86eedf075833796e96e09352fd94c0
+do_build() {
+ [ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+ sed -i "/CFLAGS/s|\${CPPFLAGS}|& $CFLAGS|g" config.mk
+ sed -i "/LDFLAGS/s|\-s|$LDFLAGS|g" config.mk
+ make CC=$CC INCS="-I. -I${XBPS_CROSS_BASE}/usr/include/freetype2" LIBS="-lX11 -lXinerama -lXft -lfontconfig"
+    }
+
+    do_install() {
+    make PREFIX=/usr DESTDIR=$DESTDIR install
+    vinstall README 644 usr/share/doc/$pkgname
+    vlicense LICENSE
+         }

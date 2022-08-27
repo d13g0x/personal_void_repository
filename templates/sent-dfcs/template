@@ -1,0 +1,32 @@
+# Template file for 'sent-dfcs' personal build
+pkgname=sent-dfcs
+version=1.1
+revision=1
+#create_wrksrc=yes
+wrksrc="sent_pkgs-${version}"
+build_style=gnu-makefile
+hostmakedepends="pkgconf"
+make_use_env=yes
+makedepends="libX11-devel libXft-devel freetype-devel"
+conflicts="sent>=0"
+depends="farbfeld"
+short_desc="Suckless simple plaintext presentation tool"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="MIT"
+homepage="http://tools.suckless.org/sent"
+distfiles="https://github.com/d13g0x/sent_pkgs/archive/refs/tags/1.1.tar.gz"
+checksum=307269990d7405390a642560131948eb3812e0cc0667882f2250df7aadbb6ed3
+
+do_configure() {
+	[ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+	cat <<! >>config.mk
+INCS = -I${XBPS_CROSS_BASE}/usr/include/freetype2
+INCS+= -I${XBPS_CROSS_BASE}/usr/include/X11
+LIBS = -lc -lm -lXft -lfontconfig -lX11
+!
+}
+
+post_install() {
+	vlicense LICENSE
+	vdoc README.md
+}

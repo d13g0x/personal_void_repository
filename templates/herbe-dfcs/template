@@ -1,0 +1,31 @@
+#Template file for 'herbe-dfcs' personal build
+pkgname=herbe-dfcs
+version=1.0
+revision=1
+build_style=gnu-makefile
+hostmakedepends="pkgconf"
+makedepends="libXft-devel freetype-devel"
+#wrksrc="herbe-dfcs-${version}"
+short_desc="Daemon-less notifications without D-Bus"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="MIT"
+homepage="https://github.com/dudik/herbe"
+distfiles="https://github.com/d13g0x/herbe-dfcs/archive/refs/tags/1.0.tar.gz"
+checksum=1a15aa5f0d39b60a2216297db9f7784f10507f6456afb29707eeb7205074965c
+
+#do_fetch(){
+#   git clone https://gitlab.com/visone/herbe-visone ${wrksrc} --depth 1
+#   cd ${wrksrc}
+#   }
+
+do_build() {
+    [ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+        # Patch Makefile to locate <ft2build.h>
+            CFLAGS="-I ${XBPS_CROSS_BASE}/usr/include/freetype2"
+            }
+
+            post_install() {
+                make PREFIX=/usr DESTDIR=$DESTDIR install
+                    vlicense LICENSE
+                    }
+

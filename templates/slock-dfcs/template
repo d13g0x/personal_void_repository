@@ -1,0 +1,26 @@
+# Template file for 'slock-dfcs' personal build
+pkgname=slock-dfcs
+version=1.4
+revision=1
+wrksrc="slock_pkgs-${version}"
+hostmakedepends="pkg-config"
+makedepends="libXrandr-devel libXinerama-devel libXft-devel freetype-devel"
+short_desc="Simple screen locker for X"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="MIT"
+homepage="http://tools.suckless.org/slock"
+distfiles="https://github.com/d13g0x/slock_pkgs/archive/refs/tags/1.4.tar.gz"
+checksum=171261280a4c6e37346a330bb3b79fbc43eebccaa69a1fbff8ac51cf719d81cc
+
+do_build() {
+	[ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+	sed -i 's/CPPFLAGS =/CPPFLAGS +=/g' config.mk
+	sed -i 's/CFLAGS =/CFLAGS +=/g' config.mk
+	sed -i 's/LDFLAGS =/LDFLAGS +=/g' config.mk
+	make CC=$CC INCS="-I. -I${XBPS_CROSS_BASE}/usr/include/freetype2" LIBS="-lX11 -lXinerama -lXext -lcrypt -lXrandr" ${makejobs}
+}
+
+do_install() {
+	make PREFIX=/usr DESTDIR=$DESTDIR install
+	vlicense LICENSE
+}

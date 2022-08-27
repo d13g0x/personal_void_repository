@@ -1,0 +1,38 @@
+# Template file for 'st-dfcs' personal build
+pkgname=st-dfcs
+version=0.8.5
+revision=1
+wrksrc="${pkgname}-${version}"
+build_style=gnu-makefile
+make_use_env=compliant
+hostmakedepends="pkgconf"
+makedepends="fontconfig-devel libX11-devel libXft-devel"
+depends="ncurses st-terminfo-${version}_${revision}"
+conflicts="st>=0"
+short_desc="Simple terminal implementation for X"
+maintainer="Diego Castillo <dsalazar9110@msn.com>"
+license="MIT"
+homepage="https://st.suckless.org"
+distfiles="https://github.com/d13g0x/st-dfcs/archive/refs/tags/0.8.5.tar.gz"
+checksum=b6b968b06d817a958ac1c07daa5cf4996c11a0b4dfc65bb9aaa02d9dec8eef21
+
+pre_build() {
+    [ -e ${FILESDIR}/config.h ] && cp ${FILESDIR}/config.h config.h
+        # We will use tic after install. See INSTALL.
+        vsed -i Makefile -e '/tic/d'
+}
+
+post_install() {
+      vinstall st.info 644 usr/share/terminfo/s st.terminfo
+      vdoc README
+      vlicense LICENSE
+}
+
+#st-terminfo_package() {
+#       short_desc+=" - terminfo data"
+#       depends="ncurses"
+#       wrksrc="${pkgname}-${version}"
+#       pkg_install() {
+#                vmove usr/share/terminfo
+#       }
+#}
